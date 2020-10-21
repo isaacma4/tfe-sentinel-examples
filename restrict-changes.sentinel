@@ -2,18 +2,19 @@ import "tfplan/v2" as tfplan
 
 param max_changes default 100
 
-get_num_resource_changes = func() {
+check_resource_changes = func() {
   resources = filter tfplan.resource_changes as _, rc {
-    rc.change.actions contains ["create", "update", "destroy"]
+    (rc.change.actions contains "create" or rc.change.actions contains "update" or rc.change.actions contains "destroy")
   }
-
+  
   if length(resources) > max_changes {
-    error("Plan is requiring", length(resources), "changes, which is more than the maximum of", max_changes, "allowed.")
+    error("Plan is requiring", length(resources), "changes, which is more than the maximum of", int(max_changes), "allowed.")
+    return false
   }
-
+  
   return true
 }
 
 main = rule {
-  get_num_resource_changes() < max_changes
+  check_resource_changes()
 }
