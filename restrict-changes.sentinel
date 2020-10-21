@@ -8,7 +8,7 @@ check_resource_changes = func() {
   }
   
   if length(resources) > max_changes {
-    error("Plan is requiring", length(resources), "changes, which is more than the maximum of", int(max_changes), "allowed.")
+    print("Plan is requiring", length(resources), "changes, which is more than the maximum of", int(max_changes), "allowed.")
     return false
   }
   
