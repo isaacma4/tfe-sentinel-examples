@@ -4,10 +4,14 @@ param max_changes default 100
 
 get_num_resource_changes = func() {
   resources = filter tfplan.resource_changes as _, rc {
-    rc.change.actions in ["create", "update", "destroy"]
+    rc.change.actions contains ["create", "update", "destroy"]
   }
 
-  return length(resources)
+  if length(resources) > max_changes {
+    error("Plan is requiring", length(resources), "changes, which is more than the maximum of", max_changes, "allowed.")
+  }
+
+  return true
 }
 
 main = rule {
