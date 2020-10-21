@@ -1,15 +1,15 @@
 import "tfplan/v2" as tfplan
 
-param max_changes 100
+param max_changes default 100
 
 get_num_resource_changes = func() {
   resources = filter tfplan.resource_changes as _, rc {
-    (rc.change.actions contains "create" or rc.change.actions contains "update" or rc.change.actions contains "destroy")
+    rc.change.actions in ["create", "update", "destroy"]
   }
 
   return length(resources)
 }
 
 main = rule {
-  get_num_resource_changes() > max_changes
+  get_num_resource_changes() < max_changes
 }
